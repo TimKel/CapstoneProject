@@ -1,11 +1,14 @@
 import os 
-from flask import Flask, request, render_template, redirect, flash, jsonify
+from flask import Flask, request, render_template, redirect, flash, jsonify, session, g 
 from flask_debugtoolbar import DebugToolbarExtension
+from sqlalchemy.exc import IntegrityError
 
 from models import bcrypt, db, connect_db, User 
 from forms import UserAddForm, UserEditForm, LoginForm
 
 from secret import APIkey 
+
+CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 
@@ -23,3 +26,69 @@ connect_db(app)
 db.create_all()
 ########################################################################################
 # Routes
+@app.before_request
+def add_user_to_g():
+    """If we're logged in, add curr user to Flask global."""
+
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+
+    else:
+        g.user = None
+
+
+def do_login(user):
+    """Log in user."""
+
+    session[CURR_USER_KEY] = user.id
+
+
+def do_logout():
+    """Logout user."""
+
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
+
+
+
+@app.route('/')
+def homepage():
+    return render_template('home.html')
+
+
+@app.route('/signup', methods=["GET", "POST"])
+def signup():
+    """Handle user signup.
+
+    Create new user and add to DB. Redirect to home page.
+
+    If form not valid, present form.
+
+    If the there already is a user with that username: flash message
+    and re-present form.
+    """
+
+    form = UserAddForm()
+    flash("Why sign up? Future features will include adding your own skate spots as our community grows. As members contribute, the skate community will have access to the best spots all around the world!", 'warning')
+    if form.validate_on_submit():
+        try:
+            user = User.signup(
+                username=form.username.data,
+                password=form.password.data,
+                email=form.email.data,
+                
+            )
+            db.session.commit()
+            flash(f"{user.username} successfully signed up", 'success')
+        except IntegrityError:
+            
+            flash("Username already taken", 'danger')
+            
+            return render_template('users/signup.html', form=form)
+
+        do_login(user)
+
+        return redirect("/")
+
+    else:
+        return render_template('users/signup.html', form=form)
