@@ -1,5 +1,11 @@
+import os 
 from flask import Flask, request, render_template, redirect, flash, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
+
+from models import bcrypt, db, connect_db, User 
+from forms import UserAddForm, UserEditForm, LoginForm
+
+from secret import APIkey 
 
 app = Flask(__name__)
 
@@ -14,6 +20,6 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
-
+db.create_all()
 ########################################################################################
 # Routes
