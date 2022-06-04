@@ -7,7 +7,7 @@
   <div class="row justify-content-md-center">
   <div class="col-md-7 col-lg-5 m-2">
     <h2 class="join-message">Create your own account with Skatepark Locator</h2>
-    <h6><i>Already have an account? <a href="/users/login">Log in</i></h6>
+    <h6><i>Already have an account? <a href="/login">Log in</i></h6>
     <form method="POST" id="user_form">
       {{ form.hidden_tag() }}
 
@@ -18,7 +18,7 @@
         {{ field(placeholder=field.label.text, class="form-control") }}
       {% endfor %}
 
-      <button class="btn btn-primary btn-lg btn-block">Sign me up!</button>
+      <button class="btn btn-primary btn-lg btn-block mt-2">Sign me up!</button>
     </form>
   </div>
 </div>
