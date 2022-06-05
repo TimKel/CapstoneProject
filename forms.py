@@ -7,12 +7,16 @@ class UserAddForm(FlaskForm):
 
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('E-mail', validators=[DataRequired(), Email()])
+    image_url = StringField('(Optional) Profile Image')
+    location = StringField('Location', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
 
 class UserEditForm(FlaskForm):
     """Form for editing user"""
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('E-mail', validators=[DataRequired(), Email()])
+    image_url = StringField('(Optional) Profile Image')
+    location = StringField('Location', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
 
 
@@ -22,3 +26,12 @@ class LoginForm(FlaskForm):
 
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
+
+
+class AddSkatepark(FlaskForm):
+    """Add skatepark form"""
+
+    name = StringField('Name of Park', validators=[DataRequired()])
+    address = StringField('Address', validators=[DataRequired()])
+    image_url = StringField('(Optional) Image')
+    description = TextAreaField('Description', validators=[DataRequired()]) 
