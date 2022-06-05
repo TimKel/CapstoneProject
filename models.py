@@ -26,7 +26,7 @@ class User(db.Model):
     email = db.Column(
         db.Text,
         nullable=False,
-        unique=True,
+        
     )
 
     username = db.Column(
@@ -48,13 +48,12 @@ class User(db.Model):
         nullable=False,
     )
 
-
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 
 
     @classmethod
-    def signup(cls, username, email, password):
+    def signup(cls, username, email, password, image_url, location):
         """Sign up user.
 
         Hashes password and adds user to system.
@@ -65,6 +64,8 @@ class User(db.Model):
         user = User(
             username=username,
             email=email,
+            image_url=image_url,
+            location=location,
             password=hashed_pwd,
         )
 
@@ -90,3 +91,32 @@ class User(db.Model):
                 return user
 
         return False
+
+
+class Skatepark(db.Model):
+    """Skatepark added to system"""
+    
+    __tablename__ = "skateparks"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+
+    name = db.Column(db.String, nullable=False, unique=True)
+
+    address = db.Column(db.String, nullable=False, unique=True)
+
+    image_url = db.Column(db.String)
+
+    description = db.Column(db.String, nullable=False)
+
+    # user_id = db.Column(
+    #     db.Integer,
+    #     db.ForeignKey('users.id', ondelete='CASCADE'),
+    #     nullable=False,
+    # )
+
+    # user = db.relationship('User', backref="skateparks")
+
