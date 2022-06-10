@@ -14,9 +14,19 @@
       <li class="list-group-item">{{park.address}}</li>
     </ul>
     <div class="card-body">
-      <a href="#" class="card-link">Directions</a>
+      
+      <form action="/directions/{{park.id}}" method="POST">
+        <input type="text" class="form-control" name="saddr" placeholder="Current Address Required" required>
+        <input name="daddr" type="hidden" value="{{skateparks.address}}">
+        <button class="btn btn-primary btn-md btn-block m-2 ml-4 mx-auto">Get Directions</button>
+    </form>
     </div>
   </div>
+  <div>
+    <div class="container"> <img src="https://maps.googleapis.com/maps/api/staticmap?zoom=15&size=400x400&maptype=roadmap\
+      &markers=size:mid%7Ccolor:red%7C{{park.address}}&key={{key}}" alt=""> 
+  </div>
+
 {% endfor %} 
 </div>
 {% endblock %}
