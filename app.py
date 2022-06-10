@@ -28,6 +28,9 @@ connect_db(app)
 db.create_all()
 ########################################################################################
 # Routes
+
+#  https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+
 @app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
@@ -53,26 +56,59 @@ def do_logout():
 
 
 
-@app.route('/')
+@app.route('/', methods=["GET"])
 def homepage():
     
     return render_template('home.html')
 
 
-@app.route('/search', methods=["POST"])
+
+@app.route('/', methods=["POST"])
+def homepage_search():
+    
+    location = request.form["search"]
+    search = Skatepark.query.filter(Skatepark.address.like('%{location}%'))
+    return render_template('home.html', location=location, search=search)
+
+
+
+@app.route('/search', methods=["GET","POST"])
 def list_parks():
-    """Show a message."""
+    """Search all parks or specified location."""
+    location = request.form["search"]
+    if location == "":
+        skateparks = Skatepark.query.all()
+        print("*****************************")
+        print(skateparks)
+        key = APIkey
+        api = requests.get(f"https://maps.googleapis.com/maps/api/staticmap?size=400x400&maptype=roadmap\&markers=size:mid%7Ccolor:red{{park.address}}&key={APIkey}")
+        return render_template('search.html', skateparks=skateparks, api=api, key=key)
+    elif location != "":
+        print(location)
+        skateparks = Skatepark.query.filter(Skatepark.address.ilike(f'%{location}%'))
+        print("^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+        print(skateparks)
+        key = APIkey
+        api = requests.get(f"https://maps.googleapis.com/maps/api/staticmap?size=400x400&maptype=roadmap\&markers=size:mid%7Ccolor:red{{park.address}}&key={APIkey}")
+        if skateparks == [] or None:
+            flash(f"Uh oh. No parks or spots added in this area. If you see something, add something!", "danger")
+        return render_template('search.html', skateparks=skateparks, api=api, key=key)
+    else:
+        flash(f"Uh oh. No parks or spots added in this area. If you see something, add something!", "danger")
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$")
+        print("UH OH")
+        return render_template('search.html')
 
-    skateparks = Skatepark.query.all()
-    return render_template('search.html', skateparks=skateparks)
 
-
-@app.route('/search/<int:skatepark_id>', methods=["GET"])
+@app.route('/directions/<int:skatepark_id>', methods=["GET","POST"])
 def show_park(skatepark_id):
-    """Show a message."""
+    """Get directions to a park from current location"""
 
     skateparks = Skatepark.query.get_or_404(skatepark_id)
-    return render_template('search.html', skateparks=skateparks)
+    spot = request.form["saddr"]
+    key = APIkey
+
+    return render_template('directions.html', skateparks=skateparks, key=key, spot=spot)
 
 
 
@@ -98,7 +134,7 @@ def signup():
 
     form = UserAddForm()
 
-    flash("Why sign up? Future features include adding your own skate spots as our community grows. As members contribute, the skate community will have access to the best spots all around the world!", 'warning')
+    flash("Why sign up? An account will allow you to add your own skate spots or parks to support and share amongst your local skate community.", 'warning')
     if g.user in session:
         flash("You're already signed in.")
         return redirect('/')
@@ -115,10 +151,9 @@ def signup():
             )
             db.session.commit()
             flash(f"{user.username} successfully signed up", 'success')
+
         except IntegrityError:
-            
-            flash("Username already taken", 'danger')
-            
+            flash("Username already taken", 'danger') 
             return render_template('users/signup.html', form=form)
 
         do_login(user)
@@ -162,6 +197,7 @@ def logout():
     return redirect('/login')
     
 
+
 @app.route('/users/profile', methods=["GET", "POST"])
 def edit_profile():
     """Update profile for current user."""
@@ -190,6 +226,7 @@ def edit_profile():
     return render_template("/users/edit.html", form=form, user_id=user.id)
 
 
+
 @app.route('/users/delete', methods=["DELETE"])
 def delete_user():
     """Delete user."""
@@ -203,23 +240,19 @@ def delete_user():
 
     db.session.delete(g.user)
     db.session.commit()
-    flash("Profile Deleted", "danger")
+    
     return redirect("/signup")
+
+
 
 @app.route('/addpark', methods=["GET", "POST"])
 def add_park():
-    """Handle user signup.
-
-    Create new user and add to DB. Redirect to home page.
-    If form not valid, present form.
-    If the there already is a user with that username: flash message
-    and re-present form.
-    """
+    """Allows logged in users to add skate spots or parks to database."""
 
     form = AddSkatepark()
     
     if not g.user:
-        flash("Must be signed in to add a skatepark.", "danger")
+        flash("Must be signed in to add a skatepark or skate spot.", "danger")
         return redirect("/")
 
     if form.validate_on_submit():
@@ -243,19 +276,3 @@ def add_park():
 
     else:
         return render_template('addpark.html', form=form)
-
-
-@app.route('/')
-def homepage_selection():
-    """Show homepage:
-
-    - anon users: no messages
-    - logged in: 100 most recent messages of followed_users
-    """
-
-    if g.user in session:
-        
-        return render_template('home.html')
-
-    else:
-        return render_template('home-anon.html')
