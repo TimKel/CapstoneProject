@@ -27,12 +27,12 @@
         {{ form.password(placeholder="Enter your password to confirm", class="form-control") }}
 
         <div class="edit-btn-area">
-          <button class="btn btn-success mt-1">Edit this user!</button>
+          <button class="btn btn-success mt-1">Save Changes</button>
           <a href="/" class="btn btn-outline-secondary mt-1">Cancel</a>
         </div>
       </form>
       <div class="delete-btn-area mt-2 ">
-        <form action="/users/delete">
+        <form action="/users/delete" method="DELETE">
             <button class="btn btn-danger">Delete Profile</button>
         </form>
     </div>
