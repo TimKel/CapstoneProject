@@ -1,0 +1,41 @@
+{% extends 'base.html' %} 
+
+{% block title %}Search{% endblock %} 
+{% block content %} 
+<div class="container">
+
+<div class="card m-5" style="width: 18rem;">
+    <img src="{{skateparks.image_url}}" class="card-img-top" style="height: 10rem;" alt="{{skateparks.name}},{{skateparks.description}}">
+    <div class="card-body">
+      <h5 class="card-title">{{skateparks.name}}</h5>
+      <p class="card-text">{{skateparks.description}}</p>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">{{skateparks.address}}</li>
+    </ul>
+    
+  </div>
+  <div>
+  <iframe
+  width="400"
+  height="400"
+  style="border:0"
+  loading="lazy"
+  allowfullscreen
+  referrerpolicy="no-referrer-when-downgrade"
+  src="https://www.google.com/maps/embed/v1/directions?key={{key}}
+    &origin={{spot}}&destination={{skateparks.address}}">
+</iframe>
+
+<!-- <iframe
+  width="400"
+  height="400"
+  style="border:0"
+  loading="lazy"
+  allowfullscreen
+  referrerpolicy="no-referrer-when-downgrade"
+  
+  src="https://maps.googleapis.com/maps/api/directions/json?origin=4417+Clearbrook+Pl&destination={{skateparks.address}}&key={{key}}">
+</iframe> -->
+</div>
+{% endblock %}
