@@ -71,23 +71,27 @@ def homepage_search():
     return render_template('home.html', location=location, search=search)
 
 
+@app.route('/search')
+def all_parks():
+    """Allows user to search all parks in DB"""
+    skateparks = Skatepark.query.limit(20)
+    key = APIkey
+    api = requests.get(f"https://maps.googleapis.com/maps/api/staticmap?size=400x400&maptype=roadmap\&markers=size:mid%7Ccolor:red{{park.address}}&key={APIkey}")
+    return render_template('search.html', skateparks=skateparks, api=api, key=key)
 
 @app.route('/search', methods=["GET","POST"])
 def list_parks():
     """Search all parks or specified location."""
+    
     location = request.form["search"]
     if location == "":
-        skateparks = Skatepark.query.all()
-        print("*****************************")
-        print(skateparks)
+        skateparks = Skatepark.query.limit(20)
         key = APIkey
         api = requests.get(f"https://maps.googleapis.com/maps/api/staticmap?size=400x400&maptype=roadmap\&markers=size:mid%7Ccolor:red{{park.address}}&key={APIkey}")
         return render_template('search.html', skateparks=skateparks, api=api, key=key)
     elif location != "":
         print(location)
-        skateparks = Skatepark.query.filter(Skatepark.address.ilike(f'%{location}%'))
-        print("^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-        print(skateparks)
+        skateparks = Skatepark.query.filter(Skatepark.address.ilike(f'%{location}%')).limit(20)
         key = APIkey
         api = requests.get(f"https://maps.googleapis.com/maps/api/staticmap?size=400x400&maptype=roadmap\&markers=size:mid%7Ccolor:red{{park.address}}&key={APIkey}")
         if skateparks == [] or None:
@@ -106,6 +110,7 @@ def show_park(skatepark_id):
 
     skateparks = Skatepark.query.get_or_404(skatepark_id)
     spot = request.form["saddr"]
+    print(spot)
     key = APIkey
 
     return render_template('directions.html', skateparks=skateparks, key=key, spot=spot)
@@ -131,13 +136,16 @@ def signup():
     If the there already is a user with that username: flash message
     and re-present form.
     """
+    if g.user:
+        flash("You're already signed in.", "danger")
+        return redirect('/')
 
     form = UserAddForm()
 
     flash("Why sign up? An account will allow you to add your own skate spots or parks to support and share amongst your local skate community.", 'warning')
-    if g.user in session:
-        flash("You're already signed in.")
-        return redirect('/')
+    # if g.user in session:
+    #     flash("You're already signed in.")
+    #     return redirect('/')
 
     if form.validate_on_submit():
         try:
@@ -159,6 +167,8 @@ def signup():
         do_login(user)
 
         return redirect("/")
+
+    
 
     else:
         return render_template('users/signup.html', form=form)
