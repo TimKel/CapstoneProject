@@ -1,12 +1,12 @@
 import os, io
 from unittest import TestCase
 from sqlalchemy import exc
-
+from flask import session
 from models import db, connect_db, User, Skatepark 
 
 os.environ['DATABASE_URL'] = "postgresql:///skateparks_test"
 
-from app import app, CURR_USER_KEY
+from app import app, CURR_USER_KEY, APIkey
 db.drop_all()
 db.create_all()
 
@@ -149,12 +149,7 @@ class SearchViewFunctionsTesting(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('AZ', str(resp.data))
 
-    def test_map_populates(self):
-        """Ensure map populates after skatepark div"""
-        with app.test_client() as c:
-            resp=c.get('/search')
-            self.assertEqual(resp.status_code, 200)
-            self.assertIn('<img src="https://maps.googleapis.com/maps/api/staticmap?zoom=15&size=400x400&maptype=roadmap\\\\\\n      &markers=size:mid%7Ccolor:red%7C15525 N Thompson Peak Pkwy Scottsdale AZ&key=AIzaSyAfwzNZ1xUkwUkMvH9YH4vzjflj5s8KkKQ" alt="">', str(resp.data))
+# Originally a test for map population but it showed my API key so I deleted it
 
     def test_login_form(self):
         """Tests specific location"""
