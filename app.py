@@ -28,9 +28,11 @@ connect_db(app)
 db.create_all()
 ########################################################################################
 # Routes
+########################################################################################
 
-#  https://css-tricks.com/snippets/css/a-guide-to-flexbox/
-
+########################################################################################
+# Create global user, login and logout routes
+########################################################################################
 @app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
@@ -54,13 +56,124 @@ def do_logout():
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
 
+########################################################################################
+# Sign-up, Edit Profile, Log In and Log Out 
+########################################################################################
 
+@app.route('/signup', methods=["GET", "POST"])
+def signup():
+    """Handle user signup.
+
+    Create new user and add to DB. Redirect to home page.
+    If form not valid, present form.
+    If the there already is a user with that username: flash message
+    and re-present form.
+    """
+    if g.user:
+        flash("You're already signed in.", "danger")
+        return redirect('/')
+
+    form = UserAddForm()
+
+    flash("Why sign up? An account will allow you to add your own skate spots or parks to support and share amongst your local skate community.", 'warning')
+    # if g.user in session:
+    #     flash("You're already signed in.")
+    #     return redirect('/')
+
+    if form.validate_on_submit():
+        try:
+            user = User.signup(
+                username=form.username.data,
+                password=form.password.data,
+                email=form.email.data,
+                image_url=form.image_url.data,
+                location=form.location.data
+                
+            )
+            db.session.commit()
+            flash(f"{user.username} successfully signed up", 'success')
+
+        except IntegrityError:
+            flash("Username already taken", 'danger') 
+            return render_template('users/signup.html', form=form)
+
+        do_login(user)
+
+        return redirect("/")
+
+    
+
+    else:
+        return render_template('users/signup.html', form=form)
+
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    """Handle user login."""
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data,
+                                 form.password.data)
+
+        if user:
+            do_login(user)
+            flash(f"Hello, {user.username}!", "success")
+            return redirect("/")
+
+        flash("Invalid credentials.", 'danger')
+
+    return render_template('users/login.html', form=form)
+
+
+@app.route('/logout')
+def logout():
+    """Handle logout of user."""
+    if not g.user:
+        flash("We're sorry, no one is currently signed in", "warning")
+        return redirect('/login')
+    session.pop(CURR_USER_KEY)
+    flash("You've succesfully signed out", "success")
+    return redirect('/login')
+
+
+@app.route('/users/profile', methods=["GET", "POST"])
+def edit_profile():
+    """Update profile for current user."""
+
+    if not g.user:
+        flash("Access unauthorized. Please sign in.", "danger")
+        return redirect("/")
+
+    user = g.user 
+    form = UserEditForm(obj=user)
+
+    if form.validate_on_submit():
+        if User.authenticate(user.username, form.password.data):
+            user.username = form.username.data
+            user.email = form.email.data 
+            user.image_url = form.image_url.data
+            user.location = form.location.data 
+            user.password = form.password.data 
+
+            db.session.commit()
+            flash("Profile updated", "success")
+            return redirect("/")
+        
+        flash("Wrong username or password. Please try again.", "danger")
+
+    return render_template("/users/edit.html", form=form, user_id=user.id)
+
+
+########################################################################################
+# User Flow: Homepage, search parks, add parks and get directions 
+########################################################################################
 
 @app.route('/', methods=["GET"])
 def homepage():
     
     return render_template('home.html')
-
 
 
 @app.route('/', methods=["POST"])
@@ -114,145 +227,6 @@ def show_park(skatepark_id):
     key = APIkey
 
     return render_template('directions.html', skateparks=skateparks, key=key, spot=spot)
-
-
-
-# @app.route('/search', methods=["POST"])
-# def search_parks():
-
-#     search = request.form['search']
-#     res = requests.get(f"https://maps.googleapis.com/maps/api/place/findplacefromtext/output?parameters")
-#     print(search)
-#     return render_template('search.html', search=search)
-
-
-
-@app.route('/signup', methods=["GET", "POST"])
-def signup():
-    """Handle user signup.
-
-    Create new user and add to DB. Redirect to home page.
-    If form not valid, present form.
-    If the there already is a user with that username: flash message
-    and re-present form.
-    """
-    if g.user:
-        flash("You're already signed in.", "danger")
-        return redirect('/')
-
-    form = UserAddForm()
-
-    flash("Why sign up? An account will allow you to add your own skate spots or parks to support and share amongst your local skate community.", 'warning')
-    # if g.user in session:
-    #     flash("You're already signed in.")
-    #     return redirect('/')
-
-    if form.validate_on_submit():
-        try:
-            user = User.signup(
-                username=form.username.data,
-                password=form.password.data,
-                email=form.email.data,
-                image_url=form.image_url.data,
-                location=form.location.data
-                
-            )
-            db.session.commit()
-            flash(f"{user.username} successfully signed up", 'success')
-
-        except IntegrityError:
-            flash("Username already taken", 'danger') 
-            return render_template('users/signup.html', form=form)
-
-        do_login(user)
-
-        return redirect("/")
-
-    
-
-    else:
-        return render_template('users/signup.html', form=form)
-
-
-
-@app.route('/login', methods=["GET", "POST"])
-def login():
-    """Handle user login."""
-
-    form = LoginForm()
-
-    if form.validate_on_submit():
-        user = User.authenticate(form.username.data,
-                                 form.password.data)
-
-        if user:
-            do_login(user)
-            flash(f"Hello, {user.username}!", "success")
-            return redirect("/")
-
-        flash("Invalid credentials.", 'danger')
-
-    return render_template('users/login.html', form=form)
-
-
-
-@app.route('/logout')
-def logout():
-    """Handle logout of user."""
-    if not g.user:
-        flash("We're sorry, no one is currently signed in", "warning")
-        return redirect('/login')
-    session.pop(CURR_USER_KEY)
-    flash("You've succesfully signed out", "success")
-    return redirect('/login')
-    
-
-
-@app.route('/users/profile', methods=["GET", "POST"])
-def edit_profile():
-    """Update profile for current user."""
-
-    if not g.user:
-        flash("Access unauthorized. Please sign in.", "danger")
-        return redirect("/")
-
-    user = g.user 
-    form = UserEditForm(obj=user)
-
-    if form.validate_on_submit():
-        if User.authenticate(user.username, form.password.data):
-            user.username = form.username.data
-            user.email = form.email.data 
-            user.image_url = form.image_url.data
-            user.location = form.location.data 
-            user.password = form.password.data 
-
-            db.session.commit()
-            flash("Profile updated", "success")
-            return redirect("/")
-        
-        flash("Wrong username or password. Please try again.", "danger")
-
-    return render_template("/users/edit.html", form=form, user_id=user.id)
-
-
-
-@app.route('/users/delete', methods=["DELETE"])
-def delete_user():
-    """Delete user."""
-
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-
-    
-    do_logout()
-
-    db.session.delete(g.user)
-    db.session.commit()
-    
-    return redirect("/signup")
-
 
 
 @app.route('/addpark', methods=["GET", "POST"])
