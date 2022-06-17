@@ -3,10 +3,10 @@
 {% block title %}Edit{% endblock %}
 {% block content %}
 
-  <div class="row justify-content-md-center">
-    <div class="col-md-4">
-      <h2 class="join-message">Edit Your Profile.</h2>
-      <form method="POST" id="user_form">
+  <div class="row-edit justify-content-md-center">
+    <div class="col-9 col-md-7" id="edit-card">
+      <h2 class="m-2">Edit Your Profile.</h2>
+      <form method="POST" id="user_form" class="m-2">
         {{ form.hidden_tag() }}
 
         {% for field in form if field.widget.input_type != 'hidden' and field.name != 'password' %}
@@ -31,11 +31,7 @@
           <a href="/" class="btn btn-outline-secondary mt-1">Cancel</a>
         </div>
       </form>
-      <div class="delete-btn-area mt-2 ">
-        <form action="/users/delete" method="DELETE">
-            <button class="btn btn-danger">Delete Profile</button>
-        </form>
-    </div>
+      
     </div>
   </div>
 

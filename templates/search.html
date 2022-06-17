@@ -2,9 +2,10 @@
 
 {% block title %}Search{% endblock %} 
 {% block content %} 
-<div class="container">
+<div class="container-spots">
 {% for park in skateparks %} 
-<div class="card m-5" style="width: 18rem;">
+<div class="row-spotcards">
+<div class="card m-2" id="spot-card">
     <img src="{{park.image_url}}" class="card-img-top" style="height: 10rem;" alt="{{skateparks.name}},{{skateparks.description}}">
     <div class="card-body">
       <h5 class="card-title">{{park.name}}</h5>
@@ -18,15 +19,18 @@
       <form action="/directions/{{park.id}}" method="POST">
         <input type="text" class="form-control" name="saddr" placeholder="Current Address Required" required>
         <input name="daddr" type="hidden" value="{{skateparks.address}}">
-        <button class="btn btn-primary btn-md btn-block m-2 ml-4 mx-auto">Get Directions</button>
+        <button class="btn btn-primary btn-lg btn-block m-2 ml-4 mx-auto">Get Directions</button>
     </form>
+    <!-- </div>
+   -->
+ 
+    <div > <img src="https://maps.googleapis.com/maps/api/staticmap?zoom=15&size=500x500&maptype=roadmap\
+      &markers=size:mid%7Ccolor:red%7C{{park.address}}&key={{key}}" id="map" alt=""> 
     </div>
   </div>
-  <div>
-    <div class="container"> <img src="https://maps.googleapis.com/maps/api/staticmap?zoom=15&size=400x400&maptype=roadmap\
-      &markers=size:mid%7Ccolor:red%7C{{park.address}}&key={{key}}" alt=""> 
-  </div>
+</div>
+</div>
 
 {% endfor %} 
-</div>
+
 {% endblock %}

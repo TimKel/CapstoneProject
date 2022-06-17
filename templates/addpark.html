@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Add Park{% endblock %}
+{% block title %}Add Park/Spot{% endblock %}
 
 {% block content %}
 
-  <div class="row justify-content-md-center">
-  <div class="col-md-7 col-lg-5 m-2">
-    <h2 class="join-message">Add your local skatepark</h2>
+  <div class="row justify-content-md-center" id="new-spot">
+  <div class="col-9 col-md-7" id="new-spot-box">
+    <h2 class="form-label m-2">Add your local skatepark or skatespot</h2>
     <form method="POST" id="add-park">
       {{ form.hidden_tag() }}
 
@@ -17,7 +17,7 @@
         {{ field(placeholder=field.label.text, class="form-control") }}
       {% endfor %}
 
-      <button class="btn btn-primary btn-lg btn-block mt-2">Submit</button>
+      <button class="btn btn-primary btn-lg btn-block mt-2 mb-1">Submit</button>
     </form>
   </div>
 </div>
