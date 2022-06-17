@@ -1,0 +1,158 @@
+/* .container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-right: auto;
+    margin-left: auto;
+  } */
+
+body {
+    background-color: #253e91;
+    }
+
+/* Sign Up page */
+#signup{
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+#signup-box{
+    background-color: lightgray;
+    border-radius: 5px;
+    padding-right: 2rem;
+    box-shadow: 5px 5px 15px black;
+    
+}
+
+#has-account{
+    color: white;
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+/* Login Page */
+
+#login{
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+#login-box{
+    background-color: lightgray;
+    border-radius: 5px;
+    padding-right: 2rem;
+    box-shadow: 5px 5px 15px black;
+}
+
+/* Homepage and overall Search box */
+
+#search{
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;   
+}
+
+#search-box{
+    background-color: lightgray;
+    border-radius: 5px;
+    padding-right: 2rem;
+    box-shadow: 5px 5px 15px black;
+}
+
+/* Add spot page */
+
+#new-spot{
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+#new-spot-box{
+    background-color: lightgray;
+    border-radius: 5px;
+    padding-right: 2rem;
+    box-shadow: 5px 5px 15px black;
+
+}
+
+/* Page with List of parks or Page with specified spot and directions */
+
+.row-spotcards{
+    margin: 3rem;
+    display: flex;
+    justify-content: center;
+    
+}
+
+#map {
+    display: flex;
+    justify-content: center;
+    margin-left: 0;
+    margin-right: 0;
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+#spot-card{
+    margin: 3rem;
+    display: flex;
+    justify-content: center;
+    box-shadow: 5px 5px 15px black;
+}
+
+/* Profile Edit Page */
+
+#edit-card{
+    background-color: lightgray;
+    border-radius: 5px;
+    box-shadow: 5px 5px 15px black;
+    margin: 2rem;
+}
+
+.row-edit{
+    display: flex;
+    justify-content: center;
+}
+
+
+@media (max-width: 640px) {
+    .container-spots{
+        margin: 0;
+    }
+    
+    .row-spotcards{
+        margin-top: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+        display: flex;
+        justify-content: center;
+        overflow-x: hidden;
+    }
+
+  }
+  
+@media (max-width: 768px) { */
+    .container-spots{
+        margin: 0;
+    }
+    
+    .row-spotcards{
+        margin-top: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+        display: flex;
+        justify-content: center;
+        overflow-x: hidden;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    #spot-card{
+        max-width: 500px;
+    }
+  }
+  
+  
