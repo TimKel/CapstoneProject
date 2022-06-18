@@ -27,3 +27,9 @@ p12 = Skatepark(name="Anthem" , description="Not as much street but an incredibl
 
 db.session.add_all([p1, p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12])
 db.session.commit()
+
+user1 = User(username="testing", password="testing123", email="testing@test.com", location="Las Vegas", image_url=None, )
+
+db.session.add(user1)
+db.session.commit()
+
