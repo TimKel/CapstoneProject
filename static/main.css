@@ -80,11 +80,16 @@ body {
 
 /* Page with List of parks or Page with specified spot and directions */
 
+/* object-fit: cover */
 .row-spotcards{
     margin: 3rem;
     display: flex;
     justify-content: center;
     
+}
+
+.card-img-top{
+    object-fit: cover;
 }
 
 #map {
