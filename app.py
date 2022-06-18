@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from models import bcrypt, db, connect_db, User, Skatepark
 from forms import UserAddForm, UserEditForm, LoginForm, AddSkatepark
 
-from secret import APIkey 
+# from secret import APIkey 
 
 CURR_USER_KEY = "curr_user"
 
@@ -26,6 +26,19 @@ toolbar = DebugToolbarExtension(app)
 connect_db(app)
 # db.drop_all()
 db.create_all()
+
+filename = 'apikey.txt'
+
+def get_file_contents(filename):
+    """Get contents of file"""
+    try:
+        with open(filename, 'r') as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        print("'%s' file not found" % filename)
+
+APIkey = os.environ.get('APIkey', get_file_contents(filename))
+
 ########################################################################################
 # Routes
 ########################################################################################
