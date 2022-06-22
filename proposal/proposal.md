@@ -22,7 +22,7 @@ Priority data is address/longitude&latitude/directions
 --- Minimal Private Info: Username/First and Last name/Email/Password ---
 
 ## DB Schema: Baseline
-![Schema Rough Draft](/Users/timothykelley1/VSCode/Springboard_Coding/Capstone-1/proposal/Schema-Capstone.jpg)
+![Schema Rough Draft](Capstone-1/proposal/Schema-Capstone.jpg)
 
 1. User
     - User can have multiple locations. 
