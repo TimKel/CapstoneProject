@@ -1,5 +1,6 @@
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import ForeignKey
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -21,6 +22,7 @@ class User(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+        autoincrement=True
     )
 
     email = db.Column(
@@ -47,6 +49,8 @@ class User(db.Model):
         db.Text,
         nullable=False,
     )
+
+    skateparks = db.relationship("Skatepark", backref="users")
 
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
@@ -112,11 +116,5 @@ class Skatepark(db.Model):
 
     description = db.Column(db.String, nullable=False)
 
-    # user_id = db.Column(
-    #     db.Integer,
-    #     db.ForeignKey('users.id', ondelete='CASCADE'),
-    #     nullable=False,
-    # )
-
-    # user = db.relationship('User', backref="skateparks")
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
