@@ -8,8 +8,6 @@ from sqlalchemy.exc import IntegrityError
 from models import bcrypt, db, connect_db, User, Skatepark
 from forms import UserAddForm, UserEditForm, LoginForm, AddSkatepark
 
-# from secret import APIkey 
-
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
@@ -93,9 +91,6 @@ def signup():
     form = UserAddForm()
 
     flash("Why sign up? An account will allow you to add your own skate spots or parks to support and share amongst your local skate community.", 'warning')
-    # if g.user in session:
-    #     flash("You're already signed in.")
-    #     return redirect('/')
 
     if form.validate_on_submit():
         try:
@@ -117,8 +112,6 @@ def signup():
         do_login(user)
 
         return redirect("/")
-
-    
 
     else:
         return render_template('users/signup.html', form=form)
@@ -182,49 +175,22 @@ def edit_profile():
 
     return render_template("/users/edit.html", form=form, user_id=user.id)
 
-
-# @app.route('/users/spots', methods=["GET", "POST"])
-# def edit_spots():
-#     """Update profile for current user."""
-
-#     if not g.user:
-#         flash("Access unauthorized. Please sign in.", "danger")
-#         return redirect("/")
-
-#     user = g.user 
-#     form = AddSkatepark(obj=user)
-
-#     if form.validate_on_submit():
-#         Skatepark.name = form.name.data
-#         Skatepark.address = form.address.data 
-#         Skatepark.image_url = form.image_url.data
-#         Skatepark.description = form.description.data 
-        
-
-#         db.session.commit()
-#         flash("Skate spot successfully updated", "success")
-#         return redirect("/")
-        
-#         flash("Wrong username or password. Please try again.", "danger")
-
-#     return render_template("/users/edit.html", form=form, user_id=user.id)
 ########################################################################################
 # User Flow: Homepage, search parks, add parks and get directions 
 ########################################################################################
 
 @app.route('/', methods=["GET"])
 def homepage():
-    user = g.user
-    print(user)
-    return render_template('home.html', user=user)
+    """present search bar on homepage"""
+    return render_template('home.html')
 
 
 @app.route('/', methods=["POST"])
 def homepage_search():
-    user = g.user
+    """Search bar navigation"""
     location = request.form["search"]
     search = Skatepark.query.filter(Skatepark.address.like('%{location}%'))
-    return render_template('home.html', user=user, location=location, search=search)
+    return render_template('home.html', location=location, search=search)
 
 
 @app.route('/search')
@@ -250,8 +216,6 @@ def list_parks():
         skateparks = Skatepark.query.filter(Skatepark.address.ilike(f'%{location}%')).limit(20)
         key = APIkey
         api = requests.get(f"https://maps.googleapis.com/maps/api/staticmap?size=400x400&maptype=roadmap\&markers=size:mid%7Ccolor:red{{park.address}}&key={APIkey}")
-        if skateparks == [] or None:
-            flash(f"Uh oh. No parks or spots added in this area. If you see something, add something!", "danger")
         return render_template('search.html', skateparks=skateparks, api=api, key=key)
     else:
         flash(f"Uh oh. No parks or spots added in this area. If you see something, add something!", "danger")
@@ -307,13 +271,12 @@ def add_park():
 
 @app.route('/spots/edit', methods=["GET"])
 def my_spots():
-    """Update profile for current user."""
+    """Show all submitted spots for curr user."""
 
     if not g.user:
         flash("Access unauthorized. Please sign in.", "danger")
         return redirect("/")
 
-    # userid = User.query.get_or_404(user_id)
     user = g.user 
     print(user)
     form = AddSkatepark(obj=user)
@@ -322,46 +285,27 @@ def my_spots():
     key = APIkey
     api = requests.get(f"https://maps.googleapis.com/maps/api/staticmap?size=400x400&maptype=roadmap\&markers=size:mid%7Ccolor:red{{park.address}}&key={APIkey}")
 
-    # if form.validate_on_submit():
-    #     try:
-            
-    #         myparks = Skatepark(
-    #             name = form.name.data,
-    #             address = form.address.data ,
-    #             image_url = form.image_url.data,
-    #             description = form.description.data 
-    #         )
-
-    #         db.session.commit()
-    #         flash("Skate spot successfully updated", "success")
-        
-    #     except IntegrityError:
-    #         flash("Incorrect or false info. Please try again.", "danger")
-    #         return render_template('/users/edit.html')
-
     return render_template("/users/myspots.html", form=form, skateparks=skateparks, user_id=user.id, api=api, key=key, )
+
 
 @app.route('/spots/edit/<int:skatepark_id>', methods=["GET","POST"])
 def my_spots_edit(skatepark_id):
-    """Update profile for current user."""
+    """Update/edit submitted spots for current user."""
+    
+    user=g.user
+    skatepark = Skatepark.query.get(skatepark_id)
+    skatepark_user = skatepark.user_id
 
-    if not g.user:
-        flash("Access unauthorized. Please sign in.", "danger")
+    """Ensures users can't access other users spots to be edited"""
+
+    if not g.user or user.id != skatepark_user:
+        flash("Access unauthorized. Please sign in to the correct account.", "danger")
         return redirect("/")
 
-    # userid = User.query.get_or_404(user_id)
-    user = g.user 
-    print(user)
     skateparks = Skatepark.query.get_or_404(skatepark_id)
-    skatepark = Skatepark.query.get(skatepark_id)
-    print(skatepark)
+    
     form = AddSkatepark(obj=skateparks)
     
-    print(skateparks)
-    print(skateparks.name)
-    print(skateparks.address)
-    
-
     if form.validate_on_submit():
         try:
             skateparks.name = form.name.data,
@@ -377,7 +321,8 @@ def my_spots_edit(skatepark_id):
             flash("Incorrect or false info. Please try again.", "danger")
             return render_template('/users/edit.html')
 
-    return render_template("/users/editparks.html", form=form, skateparks=skateparks, user_id=user.id)
+    return render_template("/users/editparks.html", form=form, skateparks=skateparks)
+
 
 @app.route('/spots/edit/<int:skatepark_id>/delete', methods=["POST"])
 def delete_spot(skatepark_id):
