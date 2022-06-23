@@ -108,6 +108,13 @@ body {
     box-shadow: 5px 5px 15px black;
 }
 
+#parkedit-cancel-btn, #parkedit-submit-btn{
+    display: inline-block;
+}
+
+#edit-park-btn{
+    text-decoration: none;
+}
 /* Profile Edit Page */
 
 #edit-card{
