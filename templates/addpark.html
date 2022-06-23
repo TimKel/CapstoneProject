@@ -5,14 +5,14 @@
 {% block content %}
 
   <div class="row justify-content-md-center" id="new-spot">
-  <div class="col-9 col-md-7" id="new-spot-box">
-    <h2 class="form-label m-2">Add your local skatepark or skatespot</h2>
-    <form method="POST" id="add-park">
+    <div class="col-9 col-md-7" id="new-spot-box">
+      <h2 class="form-label m-2">Add your local skatepark or skatespot</h2>
+      <form method="POST" id="add-park">
       {{ form.hidden_tag() }}
 
       {% for field in form if field.widget.input_type != 'hidden' %}
         {% for error in field.errors %}
-          <span class="text-danger">{{ error }}</span>
+        <span class="text-danger">{{ error }}</span>
         {% endfor %}
         {{ field(placeholder=field.label.text, class="form-control") }}
       {% endfor %}

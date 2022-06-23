@@ -3,32 +3,30 @@
 {% block title %}Search{% endblock %} 
 {% block content %} 
 <div class="container-spots">
-{% for park in skateparks %} 
-<div class="row-spotcards">
-<div class="card m-2" id="spot-card">
-    <img src="{{park.image_url}}" class="card-img-top" style="height: 15rem;" alt="{{skateparks.name}},{{skateparks.description}}">
-    <div class="card-body">
-      <h5 class="card-title">{{park.name}}</h5>
-      <p class="card-text">{{park.description}}</p>
-    </div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">{{park.address}}</li>
-    </ul>
-    <div class="card-body">
+  {% for park in skateparks %} 
+    <div class="row-spotcards">
+      <div class="card m-2" id="spot-card">
+      <img src="{{park.image_url}}" class="card-img-top" style="height: 15rem;" alt="{{skateparks.name}},{{skateparks.description}}">
+        <div class="card-body">
+        <h5 class="card-title">{{park.name}}</h5>
+        <p class="card-text">{{park.description}}</p>
+        </div>
+        <ul class="list-group list-group-flush">
+        <li class="list-group-item">{{park.address}}</li>
+        </ul>
+      <div class="card-body">
       
       <form action="/directions/{{park.id}}" method="POST">
         <input type="text" class="form-control" name="saddr" placeholder="Current Address Required" required>
         <input name="daddr" type="hidden" value="{{skateparks.address}}">
         <button class="btn btn-primary btn-lg btn-block m-2 ml-4 mx-auto">Get Directions</button>
-    </form>
-    <!-- </div>
-   -->
+      </form>
  
-    <div > <img src="https://maps.googleapis.com/maps/api/staticmap?zoom=15&size=500x500&maptype=roadmap\
-      &markers=size:mid%7Ccolor:red%7C{{park.address}}&key={{key}}" id="map" alt=""> 
+        <div > <img src="https://maps.googleapis.com/maps/api/staticmap?zoom=15&size=500x500&maptype=roadmap\
+        &markers=size:mid%7Ccolor:red%7C{{park.address}}&key={{key}}" id="map" alt=""> 
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 </div>
 
 {% endfor %} 

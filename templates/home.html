@@ -5,15 +5,11 @@
 {% block content %} 
 <div class="row" id="search">
     <div class="col-9 col-md-7" id="search-box">
-    <form method="POST" action="/search">
-        
-                <label id="park-search" class="form-label m-2"><h2>Start here to search for spots near you</h2></label>
-                
-                <input type="text" class="form-control m-2" id="searchbar" name="search" placeholder="Enter a city" >
-                
-            <button class="btn btn-primary btn-lg btn-block m-2" id="search-button">Search Parks</button>
-                
-    </form>
+        <form method="POST" action="/search">
+            <label id="park-search" class="form-label m-2"><h2>Start here to search for spots near you</h2></label>             
+            <input type="text" class="form-control m-2" id="searchbar" name="search" placeholder="Enter a city" >             
+            <button class="btn btn-primary btn-lg btn-block m-2" id="search-button">Search Parks</button>             
+        </form>
     </div>
 </div> 
 

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit {{skateparks.name}}{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-md-center" id="new-spot">
+    <div class="col-9 col-md-7" id="new-spot-box">
+        <h2 class="form-label m-2">Edit {{skateparks.name}}</h2>
+        <form method="POST" id="edit-park">
+        {{ form.hidden_tag() }}
+
+      {% for field in form if field.widget.input_type != 'hidden' %}
+        {% for error in field.errors %}
+        <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+        {{ field(placeholder=field.label.text, class="form-control") }}
+      {% endfor %}
+
+        <button id="parkedit-submit-btn" class="btn btn-primary btn-lg btn-block mt-2 mb-1">Submit</button>
+        </form>
+        <a href="/spots/edit" id="parkedit-cancel-btn">
+        <button class="btn btn-outline-secondary btn-lg btn-block mt-2 mb-1">Cancel</button>
+        </a>
+  </div>
+</div>
+
+{% endblock %}
